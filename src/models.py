@@ -1,7 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import String, Boolean, ForeignKey, PrimaryKeyConstraint
+from sqlalchemy import String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from typing import List
 
 db = SQLAlchemy()
 
@@ -14,7 +13,7 @@ class User(db.Model):
     lastname: Mapped[str] = mapped_column(String(120), nullable=False)
     email: Mapped[str] = mapped_column(
         String(120), unique=True, nullable=False)
-    favorite = relationship("Favorite", backref="user")
+    favorites = relationship("Favorite", back_populates="user")
 
 
 class Favorite(db.Model):
@@ -24,9 +23,9 @@ class Favorite(db.Model):
         ForeignKey("planet.id"), nullable=True)
     people_id: Mapped[int] = mapped_column(
         ForeignKey("people.id"), nullable=True)
-    user = relationship("User", backref="favorites")
-    planet = relationship("Planet", backref="favorites")
-    people = relationship("People", backref="favorites")
+    user = relationship("User", back_populates="favorites")
+    planet = relationship("Planet", back_populates="favorites")
+    people = relationship("People", back_populates="favorites")
 
     def serialize(self):
         return {
@@ -49,7 +48,7 @@ class People(db.Model):
     homeworld: Mapped[str] = mapped_column(String(120), nullable=True)
     birth_year: Mapped[str] = mapped_column(String(20), nullable=True)
     url: Mapped[str] = mapped_column(String(255), nullable=True)
-    favorite = relationship("Favorite", backref="people")
+    favorites = relationship("Favorite", back_populates="people")
 
     def serialize(self):
         return {
@@ -80,7 +79,7 @@ class Planet(db.Model):
     population: Mapped[int] = mapped_column(nullable=False)
     url: Mapped[str] = mapped_column(String(255), nullable=False)
     description: Mapped[str] = mapped_column(String(255), nullable=False)
-    favorite = relationship("Favorite", backref="planet")
+    favorites = relationship("Favorite", back_populates="planet")
 
     def serialize(self):
         return {
